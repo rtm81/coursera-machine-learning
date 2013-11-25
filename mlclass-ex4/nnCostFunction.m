@@ -76,7 +76,6 @@ A3 = sigmoid(Z3);
 % [maxvalue, p] = max(A3, [], 2);
 
 %size(A3) % 5000 x 10
-
 %size(y) % 5000 x 1
 hypo = A3;
 
@@ -101,9 +100,22 @@ reg = (lambda / (2 * m)) * (sum(sum(temp1.^2)) + sum(sum(temp2.^2)));
 
 J = sum(sum(costTemp)) / m + reg;
 
+for t = 1:m
+	delta_3 = A3(t) - y_nn(t);
+	
+	delta_2 = Theta2' * delta_3 .* sigmoidGradient(Z2(t));
+	delta_2 = delta_2(2:end);
+	Theta2_grad = Theta2_grad .+ delta_3 * A2(t)';
+	
+	size(Theta1_grad)
+	size(delta_2)
+	size(X(t)')
+	
+	Theta1_grad = Theta1_grad .+ delta_2 * X(t)';
+end
 
-
-
+Theta2_grad = Theta2_grad ./ m;
+Theta1_grad = Theta1_grad ./ m;
 
 
 
