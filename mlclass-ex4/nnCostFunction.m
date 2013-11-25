@@ -62,14 +62,44 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+% Add ones to the X data matrix
+X = [ones(m, 1) X];
 
+Z2 = X*Theta1';
+A2 = sigmoid(Z2);
 
+A2 = [ones(size(A2, 1), 1) A2];
 
+Z3 = A2*Theta2';
+A3 = sigmoid(Z3);
 
+% [maxvalue, p] = max(A3, [], 2);
 
+%size(A3) % 5000 x 10
 
+%size(y) % 5000 x 1
+hypo = A3;
 
+y_nn = zeros(m, num_labels); % 5000 x 10
 
+for i = 1:m
+	y_nn(i, y(i)) = 1;
+end
+
+costTemp = (-y_nn .* log(hypo) - (1 - y_nn) .* log(1 - hypo));
+
+% size (costTemp); % 5000 x 10
+% size(Theta1) % 25 x 401
+% size(Theta2) % 10 x 26
+
+temp1 = Theta1; 
+temp1(:,1) = zeros(size(Theta1, 1), 1);
+temp2 = Theta2; 
+temp2(:,1) = zeros(size(Theta2, 1), 1);
+reg = (lambda / (2 * m)) * (sum(sum(temp1.^2)) + sum(sum(temp2.^2)));
+%reg  = (lambda / (2 * m)) * (sum(sum(Theta1(:,2:length(Theta1)).^2)) + sum(sum(Theta2(:,2:length(Theta2)).^2)));
+
+J = sum(sum(costTemp)) / m + reg;
 
 
 
