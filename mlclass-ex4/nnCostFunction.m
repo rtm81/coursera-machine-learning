@@ -66,8 +66,8 @@ Theta2_grad = zeros(size(Theta2));
 X = [ones(m, 1) X];
 
 Z2 = X*Theta1';
+% size(Z2) % 5000 x 25
 A2 = sigmoid(Z2);
-
 A2 = [ones(size(A2, 1), 1) A2];
 
 Z3 = A2*Theta2';
@@ -80,38 +80,36 @@ A3 = sigmoid(Z3);
 hypo = A3;
 
 y_nn = zeros(m, num_labels); % 5000 x 10
-
 for i = 1:m
 	y_nn(i, y(i)) = 1;
 end
 
 costTemp = (-y_nn .* log(hypo) - (1 - y_nn) .* log(1 - hypo));
 
-% size (costTemp); % 5000 x 10
 % size(Theta1) % 25 x 401
 % size(Theta2) % 10 x 26
 
-temp1 = Theta1; 
-temp1(:,1) = zeros(size(Theta1, 1), 1);
-temp2 = Theta2; 
-temp2(:,1) = zeros(size(Theta2, 1), 1);
-reg = (lambda / (2 * m)) * (sum(sum(temp1.^2)) + sum(sum(temp2.^2)));
-%reg  = (lambda / (2 * m)) * (sum(sum(Theta1(:,2:length(Theta1)).^2)) + sum(sum(Theta2(:,2:length(Theta2)).^2)));
-
+reg  = (lambda / (2 * m)) * (sum(sum(Theta1(:,2:size(Theta1, 2)).^2)) + sum(sum(Theta2(:,2:size(Theta2, 2)).^2)));
 J = sum(sum(costTemp)) / m + reg;
 
 for t = 1:m
-	delta_3 = A3(t) - y_nn(t);
+	delta_3 = A3(t,:) - y_nn(t,:);
+	%size(delta_3) % 1 x 10
 	
-	delta_2 = Theta2' * delta_3 .* sigmoidGradient(Z2(t));
-	delta_2 = delta_2(2:end);
-	Theta2_grad = Theta2_grad .+ delta_3 * A2(t)';
+	Z2temp = Z2(t,:);
+	Z2temp = [ones(size(Z2temp, 1), 1) Z2temp];
+	delta_2 = delta_3 * Theta2 .* sigmoidGradient(Z2temp);
+	%size(delta_2) % 1 x 26
+	%delta_2 = delta_2(2:end,:);
+	%size(Theta2_grad) % 10 x 26
+	Theta2_grad = Theta2_grad .+ delta_3' * A2(t,:);
 	
-	size(Theta1_grad)
-	size(delta_2)
-	size(X(t)')
+	%size(Theta1_grad) % 25 x 401
+	delta_2 = delta_2(:,2:end);
+	%size(delta_2) %  1 x 26
+	%size(X(t,:)') % 401 x 1
 	
-	Theta1_grad = Theta1_grad .+ delta_2 * X(t)';
+	Theta1_grad = Theta1_grad .+ (delta_2' * X(t,:));
 end
 
 Theta2_grad = Theta2_grad ./ m;
