@@ -30,7 +30,6 @@ J =1/(2*m) * sum(sqrErrors) + reg;
 grad = X'*(predictions - y) ./ m;
 grad(2:end) = grad(2:end) + (lambda / m) * theta(2:end);
 
-%Theta1_grad(:,2:end) = Theta1_grad(:,2:end) .+ (lambda / m) * Theta1(:,2:end);
 
 % =========================================================================
 
